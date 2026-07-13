@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cheo — Accessory</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FAFBFC; --icy:#A9C8DC; --mist:#DCE1E5; --ink:#3E4C58;
+    --en:'Questrial',sans-serif; --kr:'Pretendard',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--white);color:var(--ink);font-family:var(--kr);}
+  a{color:inherit;text-decoration:none;}
+  img{display:block;}
+  button{font-family:var(--kr);cursor:pointer;}
+  ::selection{background:var(--icy);color:#fff;}
+
+  header{position:sticky;top:0;z-index:900;background:rgba(250,251,252,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--mist);}
+  .hwrap{max-width:1360px;margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:28px;}
+  .logo{font-family:var(--en);font-size:1.5rem;letter-spacing:.18em;}
+  .logo .o{color:var(--icy);}
+  nav{display:flex;gap:30px;margin:0 auto;}
+  nav a{font-size:.88rem;padding:6px 0;position:relative;}
+  nav a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1.5px;background:var(--icy);transition:width .25s;}
+  nav a:hover::after, nav a.on::after{width:100%;}
+  .hicons{display:flex;gap:18px;font-size:.8rem;opacity:.8;}
+  @media(max-width:720px){nav{gap:14px;} nav a{font-size:.76rem;} .hwrap{padding:0 14px;gap:12px;} .logo{font-size:1.2rem;} .hicons{gap:10px;}}
+  .wrap{max-width:1360px;margin:0 auto;padding:28px;}
+  .crumb{font-size:.78rem;opacity:.7;display:flex;gap:8px;align-items:center;}
+  .crumb a:hover{color:var(--icy);}
+  .pagetitle{font-weight:400;font-size:clamp(1.6rem,3vw,2.3rem);margin:18px 0 30px;}
+
+  /* ---- PLP layout ---- */
+  .plp{display:grid;grid-template-columns:250px 1fr;gap:40px;}
+  @media(max-width:900px){.plp{grid-template-columns:1fr;}}
+  .filters{font-size:.85rem;}
+  .fgroup{border-top:1px solid var(--mist);padding:16px 0;}
+  .fgroup h5{font-size:.85rem;font-weight:600;display:flex;justify-content:space-between;cursor:pointer;}
+  .fgroup .opts{margin-top:12px;display:flex;flex-direction:column;gap:9px;}
+  .opts label{display:flex;gap:8px;align-items:center;font-weight:300;cursor:pointer;}
+  .opts input{accent-color:var(--icy);width:15px;height:15px;}
+  .toolbar{display:flex;justify-content:flex-end;align-items:center;gap:16px;font-size:.85rem;margin-bottom:22px;}
+  .toolbar .count{margin-right:auto;font-weight:300;opacity:.75;}
+  .toolbar select{padding:8px 12px;border:1px solid var(--mist);border-radius:6px;font-family:var(--kr);color:var(--ink);background:#fff;}
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media(max-width:1100px){.pgrid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.pgrid{grid-template-columns:1fr;}}
+  .pcard{cursor:pointer;}
+  .pcard .ph{aspect-ratio:4/5;border-radius:4px;overflow:hidden;background:var(--mist);position:relative;}
+  .pcard .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+  .pcard:hover .ph img{transform:scale(1.05);}
+  .pcard .badge{position:absolute;top:12px;left:12px;background:rgba(250,251,252,.9);font-family:var(--en);font-size:.58rem;letter-spacing:.22em;padding:5px 10px;border-radius:3px;text-transform:uppercase;}
+  .pcard h4{font-weight:500;font-size:.95rem;margin-top:13px;}
+  .pcard .use{font-weight:300;font-size:.76rem;opacity:.6;margin-top:3px;}
+  .pcard .price{font-weight:400;font-size:.88rem;margin-top:6px;}
+  .dots{display:flex;gap:6px;margin-top:8px;}
+  .dot{width:14px;height:14px;border-radius:50%;border:1px solid var(--mist);}
+
+  /* ---- PDP layout ---- */
+  .pdp{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:start;}
+  @media(max-width:960px){.pdp{grid-template-columns:1fr;}}
+  .gallery{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .gallery .g{aspect-ratio:4/5;border-radius:4px;overflow:hidden;background:var(--mist);}
+  .gallery .g img{width:100%;height:100%;object-fit:cover;}
+  .buy .crumb{margin-bottom:14px;}
+  .buy h1{font-weight:500;font-size:clamp(1.4rem,2.4vw,1.9rem);line-height:1.4;}
+  .buy .use{font-size:.9rem;font-weight:300;margin-top:8px;}
+  .stars{display:flex;gap:10px;align-items:center;font-size:.82rem;margin-top:12px;}
+  .stars .s{color:var(--icy);letter-spacing:2px;}
+  .stars a{text-decoration:underline;opacity:.75;}
+  .pricebox{margin-top:26px;font-size:.95rem;}
+  .pricebox .p{font-size:1.15rem;font-weight:600;display:inline-block;margin-right:10px;}
+  .pricebox .cname{font-weight:300;opacity:.75;}
+  .swatches{display:flex;gap:10px;margin-top:12px;}
+  .sw{width:30px;height:30px;border-radius:50%;border:1px solid var(--mist);cursor:pointer;position:relative;}
+  .sw.on::after{content:'';position:absolute;inset:-5px;border:1.5px solid var(--ink);border-radius:50%;}
+  .sizehead{display:flex;justify-content:space-between;align-items:center;margin:28px 0 12px;font-size:.9rem;}
+  .sizehead b{font-weight:600;}
+  .sizehead a{text-decoration:underline;font-size:.82rem;opacity:.75;}
+  .sizes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .sz{border:1px solid var(--mist);border-radius:6px;background:#fff;padding:13px 6px;font-size:.85rem;transition:all .15s;}
+  .sz.on{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .fitq{font-size:.82rem;margin-top:14px;opacity:.75;}
+  .fitq em{font-style:normal;background:var(--icy);color:#fff;padding:1px 6px;border-radius:3px;font-size:.7rem;margin-right:6px;}
+  .cartbox{border:1px solid var(--mist);border-radius:8px;padding:22px;margin-top:26px;text-align:center;}
+  .cartbtn{width:100%;background:var(--ink);color:#fff;border:none;border-radius:6px;padding:16px;font-size:.95rem;font-weight:600;transition:background .2s;}
+  .cartbtn:hover{background:var(--icy);}
+  .shipnote{font-size:.8rem;margin-top:14px;opacity:.75;}
+  .shipnote u{cursor:pointer;}
+  .storebox{border:1px solid var(--mist);border-radius:8px;padding:20px;margin-top:14px;text-align:center;font-size:.85rem;}
+  .storebox b{display:block;font-size:.9rem;margin-bottom:4px;}
+  .storebox span{font-weight:300;opacity:.7;font-size:.78rem;}
+
+  /* accordions */
+  .accs{max-width:1360px;margin:56px auto 0;padding:0 28px;}
+  .acc{border-top:1px solid var(--mist);}
+  .acc:last-child{border-bottom:1px solid var(--mist);}
+  .acc-h{display:flex;justify-content:space-between;align-items:center;padding:26px 4px;font-size:1.15rem;font-weight:500;cursor:pointer;}
+  .acc-h .ar{transition:transform .25s;font-size:.85rem;opacity:.6;}
+  .acc.open .ar{transform:rotate(180deg);}
+  .acc-b{display:none;padding:0 4px 30px;font-size:.9rem;font-weight:300;line-height:2;white-space:pre-line;opacity:.85;max-width:52em;}
+  .acc.open .acc-b{display:block;}
+  .sku{text-align:center;font-size:.8rem;opacity:.55;padding:34px 0;}
+
+  /* reviews */
+  .reviews{background:#F2F6F9;margin-top:20px;}
+  .reviews .wrap{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:56px 28px;}
+  @media(max-width:760px){.reviews .wrap{grid-template-columns:1fr;}}
+  .reviews h3{font-weight:500;font-size:1.1rem;margin-bottom:12px;}
+  .reviews p{font-size:.85rem;font-weight:300;opacity:.75;line-height:1.9;}
+  .rbtn{margin-top:16px;display:inline-block;border:1px solid var(--ink);border-radius:99px;padding:10px 22px;font-size:.82rem;background:transparent;}
+  .rbtn:hover{background:var(--ink);color:#fff;}
+
+  /* ---- ADMIN ---- */
+  .admin{max-width:860px;margin:0 auto;}
+  .admin .note{font-size:.82rem;font-weight:300;opacity:.7;line-height:1.8;margin-bottom:26px;}
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:640px){.form{grid-template-columns:1fr;}}
+  .form .full{grid-column:1/-1;}
+  .fld label{display:block;font-size:.75rem;font-weight:600;margin-bottom:7px;color:var(--ink);}
+  .fld label small{font-weight:300;opacity:.6;}
+  .fld input,.fld select,.fld textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--mist);border-radius:6px;
+    font-family:var(--kr);font-size:.85rem;color:var(--ink);background:#fff;
+  }
+  .fld textarea{min-height:90px;resize:vertical;line-height:1.7;}
+  .fld input:focus,.fld textarea:focus,.fld select:focus{outline:2px solid var(--icy);border-color:transparent;}
+  .formbtns{grid-column:1/-1;display:flex;gap:10px;margin-top:8px;}
+  .btn{border:none;border-radius:6px;padding:13px 26px;font-size:.88rem;font-weight:600;}
+  .btn.save{background:var(--ink);color:#fff;}
+  .btn.save:hover{background:var(--icy);}
+  .btn.ghost{background:#fff;border:1px solid var(--mist);color:var(--ink);font-weight:400;}
+  .plist{margin-top:44px;border-top:1px solid var(--mist);}
+  .prow{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--mist);font-size:.85rem;}
+  .prow img{width:46px;height:56px;object-fit:cover;border-radius:4px;background:var(--mist);}
+  .prow .nm{font-weight:500;}
+  .prow .pr{font-weight:300;opacity:.7;margin-left:auto;}
+  .prow button{border:1px solid var(--mist);background:#fff;border-radius:5px;padding:6px 12px;font-size:.75rem;}
+  .prow button:hover{border-color:var(--ink);}
+  .adminlink{font-size:.7rem;opacity:.45;}
+  .adminlink:hover{opacity:1;color:var(--icy);}
+
+  footer{background:var(--ink);color:#fff;margin-top:90px;}
+  footer .fw{max-width:1360px;margin:0 auto;padding:34px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  footer .mark{font-family:var(--en);letter-spacing:.3em;font-size:.8rem;}
+  footer .mark .o{color:var(--icy);}
+  footer .copy{font-size:.66rem;font-weight:300;opacity:.5;letter-spacing:.08em;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <a class="logo" href="index.html">che<span class="o">o</span></a>
+    <nav>
+      <a href="brand-story.html">Brand story</a>
+      <a href="#/list" class="on">Accessory</a>
+      <a href="index.html#community">Community</a>
+    </nav>
+    <div class="hicons"><span>⌕</span><span>◦</span><span>▢</span></div>
+  </div>
+</header>
+
+<!-- ================= PLP (목록) ================= -->
+<div id="viewList" class="wrap">
+  <div class="crumb"><a href="index.html">홈</a> / <span>Accessory</span></div>
+  <h1 class="pagetitle">액세서리</h1>
+  <div class="plp">
+    <aside class="filters">
+      <div class="fgroup"><h5>카테고리</h5>
+        <div class="opts" id="fCat"></div>
+      </div>
+      <div class="fgroup"><h5>가격</h5>
+        <div class="opts" id="fPrice">
+          <label><input type="checkbox" value="a">₩10,000 이하</label>
+          <label><input type="checkbox" value="b">₩10,000 — 30,000</label>
+          <label><input type="checkbox" value="c">₩30,000 이상</label>
+        </div>
+      </div>
+    </aside>
+    <div>
+      <div class="toolbar">
+        <span class="count" id="cnt"></span>
+        <span>정렬</span>
+        <select id="sort">
+          <option value="rec">추천순</option>
+          <option value="low">낮은 가격순</option>
+          <option value="high">높은 가격순</option>
+        </select>
+      </div>
+      <div class="pgrid" id="grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PDP (상품) ================= -->
+<div id="viewProd" class="hidden">
+  <div class="wrap">
+    <div class="pdp">
+      <div class="gallery" id="gal"></div>
+      <div class="buy">
+        <div class="crumb" id="pCrumb"></div>
+        <h1 id="pName"></h1>
+        <div class="use" id="pUse"></div>
+        <div class="stars"><span class="s">★★★★★</span><span>5.0 (0)</span><a href="#" onclick="return false;">리뷰 쓰기</a></div>
+        <div class="pricebox">
+          <span class="p" id="pPrice"></span><span class="cname">컬러 : <span id="pColorName"></span></span>
+          <div class="swatches" id="pSw"></div>
+        </div>
+        <div class="sizehead"><b>사이즈를 선택하세요</b><a href="#" onclick="return false;">사이즈 가이드</a></div>
+        <div class="sizes" id="pSizes"></div>
+        <div class="fitq"><em>cheo</em>내게 딱 맞는 사이즈는?</div>
+        <div class="cartbox">
+          <button class="cartbtn" id="cartBtn">장바구니 담기</button>
+          <div class="shipnote"><u>무료배송 + 무료반품</u> ⓘ</div>
+        </div>
+        <div class="storebox"><b>오프라인 팝업에서 찾기</b><span>재고 확인을 위해 사이즈를 선택하세요</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="accs" id="pAccs"></div>
+  <div class="sku" id="pSku"></div>
+  <div class="reviews">
+    <div class="wrap" style="display:grid;">
+      <div><h3>리뷰</h3><p>아직 등록된 리뷰가 없습니다. 첫 번째 수련의 기록을 남겨주세요.</p></div>
+      <div style="text-align:right;"><h3>별점</h3><p>이 제품에 대한 소중한 리뷰를 남겨주세요.</p><button class="rbtn">리뷰 쓰기</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ADMIN (제품 등록) ================= -->
+<div id="viewAdmin" class="wrap hidden">
+  <div class="admin">
+    <div class="crumb"><a href="#/list">Accessory</a> / <span>제품 등록</span></div>
+    <h1 class="pagetitle">제품 등록</h1>
+    <p class="note">등록한 제품은 이 브라우저에 저장되어 목록 페이지에 바로 나타납니다. 항목 구성은 룰루레몬 상품 페이지와 동일합니다 — 핏 & 기능 / 원단 / 소재 & 관리 방법 / 배송 및 반품정책.</p>
+    <form class="form" id="pf" onsubmit="return false;">
+      <input type="hidden" id="f_id">
+      <div class="fld"><label>제품명 *</label><input id="f_name" required placeholder="예: 풀사이즈 매트타올"></div>
+      <div class="fld"><label>가격 (숫자만) *</label><input id="f_price" type="number" required placeholder="45000"></div>
+      <div class="fld"><label>카테고리</label>
+        <select id="f_cat"><option>타올</option><option>파우치 & 백</option><option>어패럴</option><option>굿즈</option><option>세트</option></select>
+      </div>
+      <div class="fld"><label>활용도</label><input id="f_use" placeholder="예: 요가 & 트래블"></div>
+      <div class="fld"><label>뱃지 <small>(선택 — 카드에 표시)</small></label><input id="f_badge" placeholder="예: Hero / Set / Gift"></div>
+      <div class="fld"><label>컬러 <small>(이름:HEX, 쉼표 구분)</small></label><input id="f_colors" placeholder="Cloud White:#FAFBFC, Icy Blue:#A9C8DC"></div>
+      <div class="fld"><label>사이즈 <small>(쉼표 구분, 단일 사이즈면 'One Size')</small></label><input id="f_sizes" placeholder="One Size"></div>
+      <div class="fld"><label>SKU <small>(비우면 자동 생성)</small></label><input id="f_sku" placeholder="자동"></div>
+      <div class="fld full"><label>이미지 URL <small>(최대 4개, 줄바꿈 구분 — 같은 폴더 파일은 파일명만)</small></label><textarea id="f_imgs" placeholder="hero.png&#10;https://..."></textarea></div>
+      <div class="fld full"><label>핏 & 기능</label><textarea id="f_fit" placeholder="구성과 사용감을 줄바꿈으로 적어주세요"></textarea></div>
+      <div class="fld full"><label>원단</label><textarea id="f_fabric" placeholder="예: 300g 초경량 퀵드라이 원단&#10;4방 스트레치..."></textarea></div>
+      <div class="fld full"><label>소재 & 관리 방법</label><textarea id="f_care" placeholder="소재 구성과 세탁 방법"></textarea></div>
+      <div class="fld full"><label>배송 및 반품정책</label><textarea id="f_ship">제품 수령은 주문 후 3영업일 이내 가능합니다. (산간 및 도서 지역은 1-2일 추가 소요)
+
+온라인 스토어 반품 정책
+수령일로부터 30일 이내에 반품 신청할 수 있습니다. 반품 신청 전에 제품 택이 부착되어 있는지, 착용 및 세탁하지 않은 상태인지 확인해주세요. 품질 문제는 기간과 관계없이 무조건 교환해드립니다.</textarea></div>
+      <div class="formbtns">
+        <button class="btn save" id="btnSaveP">제품 저장</button>
+        <button class="btn ghost" id="btnNewP">새로 작성</button>
+        <button class="btn ghost" id="btnSeed">기본 4종 복원</button>
+      </div>
+    </form>
+    <div class="plist" id="plist"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="fw">
+    <span class="mark">che<span class="o">o</span></span>
+    <a class="adminlink" href="#/admin">제품 등록 →</a>
+    <span class="copy">cheo · yoga. travel. essentials. · 2026</span>
+  </div>
+</footer>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const PSTORE='cheo_products_v1';
+const IMG={
+  morning:'https://d8j0ntlcm91z4.cloudfront.net/user_3GALL7hgX6ywyzR6MxueZFmAau1/hf_20260711_134540_e4ad8eda-9aec-473e-9adb-8110bc606f91.png',
+  packing:'https://d8j0ntlcm91z4.cloudfront.net/user_3GALL7hgX6ywyzR6MxueZFmAau1/hf_20260711_135055_a3f91cbe-f59f-46c6-8896-0f8f7b0e939f.png',
+  family:'https://d8j0ntlcm91z4.cloudfront.net/user_3GALL7hgX6ywyzR6MxueZFmAau1/hf_20260711_150059_adf40b7c-9039-4f44-b218-5283c648f07a.png',
+  mat:'https://d8j0ntlcm91z4.cloudfront.net/user_3GALL7hgX6ywyzR6MxueZFmAau1/hf_20260711_150216_a144db11-3828-44b0-98dd-6839c752c0c8.png'
+};
+const SHIP_DEFAULT=`제품 수령은 주문 후 3영업일 이내 가능합니다. (산간 및 도서 지역은 1-2일 추가 소요)
+
+온라인 스토어 반품 정책
+수령일로부터 30일 이내에 반품 신청할 수 있습니다. 반품 신청 전에 제품 택이 부착되어 있는지, 착용 및 세탁하지 않은 상태인지 확인해주세요. 품질 문제는 기간과 관계없이 무조건 교환해드립니다.`;
+const SEED=[
+ {id:'mat-towel',name:'풀사이즈 매트타올',price:45000,cat:'타올',use:'요가 & 트래블',badge:'Hero',
+  colors:[{name:'Cloud White',hex:'#FAFBFC'},{name:'Icy Blue',hex:'#A9C8DC'}],sizes:['One Size'],
+  images:[IMG.mat,IMG.morning,IMG.family,IMG.packing],
+  fit:'풀사이즈 매트를 완전히 덮는 크기\n호텔 방바닥, 렌탈매트 위 어디든 수련의 자리가 됩니다\n돌돌 말면 캐리어 앞주머니에 들어갑니다',
+  fabric:'300g 초경량 퀵드라이 원단\n젖을수록 그립이 살아나는 논슬립 조직\n아이시 블루 싱글 스티치 마감',
+  care:'소재: 폴리에스터 85%, 나일론 15%\n세탁기에서 찬물로 세탁\n표백제 사용 금지\n저온 건조\n유사 색상끼리 세탁',ship:SHIP_DEFAULT,sku:'CHEO-MT-45'},
+ {id:'hand-towel',name:'요가 & 트래블 핸드타올',price:19000,cat:'타올',use:'요가 & 트래블',badge:'',
+  colors:[{name:'Cloud White',hex:'#FAFBFC'}],sizes:['One Size'],
+  images:[IMG.morning,IMG.mat,IMG.family,IMG.packing],
+  fit:'요가원에서도, 여행 가방에서도 같은 물건\n짐을 꾸릴 때 가장 먼저 들어갑니다',
+  fabric:'고밀도 흡수 파일 조직\n아이보리 우븐라벨, 싱글 스티치',
+  care:'소재: 면 70%, 폴리에스터 30%\n세탁기에서 찬물로 세탁\n표백제 사용 금지\n저온 건조',ship:SHIP_DEFAULT,sku:'CHEO-HT-19'},
+ {id:'packing-set',name:'패킹 세트',price:49000,cat:'세트',use:'트래블',badge:'Set',
+  colors:[{name:'Mist Gray',hex:'#DCE1E5'},{name:'Cloud White',hex:'#FAFBFC'}],sizes:['One Size'],
+  images:[IMG.packing,IMG.family,IMG.mat,IMG.morning],
+  fit:'기내 트레이 구조의 패킹 박스\n패킹 가이드 카드 동봉 — 마지막 줄은 "이제, 어디로 갈까요?"\n러기지 태그 포함',
+  fabric:'구성품별 상이 — 각 단품 페이지 참조',
+  care:'구성품별 관리 방법 카드 동봉',ship:SHIP_DEFAULT,sku:'CHEO-PS-49'},
+ {id:'scrunchie',name:'스크런치',price:9000,cat:'굿즈',use:'요가 & 데일리',badge:'Gift',
+  colors:[{name:'Cloud White',hex:'#FAFBFC'},{name:'Icy Blue',hex:'#A9C8DC'}],sizes:['One Size'],
+  images:[IMG.family,IMG.morning,IMG.packing,IMG.mat],
+  fit:'"이거 어디 거예요?"를 만드는 첫 시그니처\n선물 포장 시 미니 패킹 카드 동봉',
+  fabric:'새틴 새김 원단, 우븐라벨',
+  care:'소재: 폴리에스터 100%\n손세탁 권장, 그늘 건조',ship:SHIP_DEFAULT,sku:'CHEO-SC-09'}
+];
+function getProducts(){
+  try{const v=JSON.parse(localStorage.getItem(PSTORE));if(Array.isArray(v)&&v.length)return v;}catch(e){}
+  return SEED.slice();
+}
+function setProducts(list){localStorage.setItem(PSTORE,JSON.stringify(list));}
+let products=getProducts();
+
+/* ---------- router ---------- */
+const views={list:$('#viewList'),prod:$('#viewProd'),admin:$('#viewAdmin')};
+function route(){
+  const h=location.hash||'#/list';
+  Object.values(views).forEach(v=>v.classList.add('hidden'));
+  if(h.startsWith('#/product/')){
+    const p=products.find(x=>x.id===decodeURIComponent(h.split('/')[2]));
+    if(p){renderPDP(p);views.prod.classList.remove('hidden');}
+    else{views.list.classList.remove('hidden');renderPLP();}
+  }else if(h==='#/admin'){
+    renderAdmin();views.admin.classList.remove('hidden');
+  }else{
+    renderPLP();views.list.classList.remove('hidden');
+  }
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ---------- PLP ---------- */
+function won(n){return '₩'+Number(n).toLocaleString('ko-KR');}
+function renderCatFilter(){
+  const cats=[...new Set(products.map(p=>p.cat))];
+  $('#fCat').innerHTML=cats.map(c=>`<label><input type="checkbox" value="${c}">${c}</label>`).join('');
+  $$('#fCat input').forEach(i=>i.addEventListener('change',renderGrid));
+}
+function renderPLP(){renderCatFilter();renderGrid();}
+function renderGrid(){
+  const cats=$$('#fCat input:checked').map(i=>i.value);
+  const prs=$$('#fPrice input:checked').map(i=>i.value);
+  let list=products.filter(p=>{
+    if(cats.length&&!cats.includes(p.cat))return false;
+    if(prs.length){
+      const ok=prs.some(r=>r==='a'?p.price<=10000:r==='b'?(p.price>10000&&p.price<=30000):p.price>30000);
+      if(!ok)return false;
+    }
+    return true;
+  });
+  const s=$('#sort').value;
+  if(s==='low')list.sort((a,b)=>a.price-b.price);
+  if(s==='high')list.sort((a,b)=>b.price-a.price);
+  $('#cnt').textContent=list.length+'개 제품';
+  $('#grid').innerHTML=list.map(p=>`
+    <div class="pcard" onclick="location.hash='#/product/${p.id}'">
+      <div class="ph"><img src="${p.images[0]||''}" alt="${p.name}">${p.badge?`<span class="badge">${p.badge}</span>`:''}</div>
+      <h4>${p.name}</h4>
+      <div class="use">${p.use||''}</div>
+      <div class="price">${won(p.price)}</div>
+      <div class="dots">${(p.colors||[]).map(c=>`<span class="dot" style="background:${c.hex}"></span>`).join('')}</div>
+    </div>`).join('');
+}
+$('#sort').addEventListener('change',renderGrid);
+$$('#fPrice input').forEach(i=>i.addEventListener('change',renderGrid));
+
+/* ---------- PDP ---------- */
+function renderPDP(p){
+  $('#gal').innerHTML=(p.images||[]).filter(Boolean).slice(0,4).map(u=>`<div class="g"><img src="${u}"></div>`).join('');
+  $('#pCrumb').innerHTML=`<a href="#/list">Accessory</a> / <span>${p.cat}</span>`;
+  $('#pName').textContent=p.name;
+  $('#pUse').textContent='활용도: '+(p.use||'—');
+  $('#pPrice').textContent=won(p.price);
+  const sw=$('#pSw');
+  sw.innerHTML=(p.colors||[]).map((c,i)=>`<span class="sw${i===0?' on':''}" style="background:${c.hex}" title="${c.name}" data-n="${c.name}"></span>`).join('');
+  $('#pColorName').textContent=(p.colors&&p.colors[0])?p.colors[0].name:'—';
+  $$('#pSw .sw').forEach(el=>el.addEventListener('click',()=>{
+    $$('#pSw .sw').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+    $('#pColorName').textContent=el.dataset.n;
+  }));
+  $('#pSizes').innerHTML=(p.sizes||['One Size']).map(s=>`<button class="sz">${s}</button>`).join('');
+  $$('#pSizes .sz').forEach(el=>el.addEventListener('click',()=>{
+    $$('#pSizes .sz').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+  }));
+  $('#cartBtn').onclick=()=>alert('구상 단계의 데모입니다 — 결제 연동 전입니다.');
+  const secs=[['핏 & 기능',p.fit],['원단',p.fabric],['소재 & 관리 방법',p.care],['배송 및 반품정책',p.ship]];
+  $('#pAccs').innerHTML=secs.map(([t,b],i)=>`
+    <div class="acc${i===0?' open':''}">
+      <div class="acc-h">${t}<span class="ar">⌄</span></div>
+      <div class="acc-b">${(b||'—')}</div>
+    </div>`).join('');
+  $$('#pAccs .acc-h').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+  $('#pSku').textContent='SKU: '+(p.sku||p.id);
+}
+
+/* ---------- ADMIN ---------- */
+function renderAdmin(){
+  $('#plist').innerHTML=products.map(p=>`
+    <div class="prow">
+      <img src="${p.images[0]||''}"><span class="nm">${p.name}</span>
+      <span class="pr">${won(p.price)} · ${p.cat}</span>
+      <button onclick="editP('${p.id}')">수정</button>
+      <button onclick="delP('${p.id}')">삭제</button>
+      <button onclick="location.hash='#/product/${p.id}'">보기</button>
+    </div>`).join('');
+}
+function clearForm(){
+  $('#pf').reset();$('#f_id').value='';$('#f_ship').value=SHIP_DEFAULT;
+}
+window.editP=function(id){
+  const p=products.find(x=>x.id===id);if(!p)return;
+  $('#f_id').value=p.id;$('#f_name').value=p.name;$('#f_price').value=p.price;
+  $('#f_cat').value=p.cat;$('#f_use').value=p.use||'';$('#f_badge').value=p.badge||'';
+  $('#f_colors').value=(p.colors||[]).map(c=>`${c.name}:${c.hex}`).join(', ');
+  $('#f_sizes').value=(p.sizes||[]).join(', ');
+  $('#f_sku').value=p.sku||'';
+  $('#f_imgs').value=(p.images||[]).join('\n');
+  $('#f_fit').value=p.fit||'';$('#f_fabric').value=p.fabric||'';
+  $('#f_care').value=p.care||'';$('#f_ship').value=p.ship||SHIP_DEFAULT;
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+window.delP=function(id){
+  if(!confirm('이 제품을 삭제할까요?'))return;
+  products=products.filter(x=>x.id!==id);setProducts(products);renderAdmin();
+};
+$('#btnSaveP').addEventListener('click',()=>{
+  const name=$('#f_name').value.trim(),price=+$('#f_price').value;
+  if(!name||!price){alert('제품명과 가격을 입력해주세요.');return;}
+  let id=$('#f_id').value||name.toLowerCase().replace(/[^a-z0-9가-힣]+/g,'-')+'-'+Date.now().toString(36).slice(-4);
+  const colors=$('#f_colors').value.split(',').map(s=>s.trim()).filter(Boolean).map(s=>{
+    const[n,h]=s.split(':').map(x=>x.trim());return{name:n||'Color',hex:h||'#DCE1E5'};
+  });
+  const p={
+    id,name,price,cat:$('#f_cat').value,use:$('#f_use').value.trim(),badge:$('#f_badge').value.trim(),
+    colors:colors.length?colors:[{name:'Cloud White',hex:'#FAFBFC'}],
+    sizes:$('#f_sizes').value.split(',').map(s=>s.trim()).filter(Boolean).length?$('#f_sizes').value.split(',').map(s=>s.trim()).filter(Boolean):['One Size'],
+    images:$('#f_imgs').value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,4),
+    fit:$('#f_fit').value,fabric:$('#f_fabric').value,care:$('#f_care').value,
+    ship:$('#f_ship').value||SHIP_DEFAULT,
+    sku:$('#f_sku').value.trim()||('CHEO-'+id.toUpperCase().slice(0,10))
+  };
+  const i=products.findIndex(x=>x.id===$('#f_id').value);
+  if(i>-1)products[i]=p;else products.push(p);
+  setProducts(products);clearForm();renderAdmin();
+  alert('저장되었습니다 — 목록 페이지에 반영됩니다.');
+});
+$('#btnNewP').addEventListener('click',clearForm);
+$('#btnSeed').addEventListener('click',()=>{
+  if(!confirm('기본 4종(매트타올·핸드타올·패킹세트·스크런치)을 다시 불러올까요? 현재 목록에 추가됩니다.'))return;
+  SEED.forEach(s=>{if(!products.find(p=>p.id===s.id))products.push(s);});
+  setProducts(products);renderAdmin();
+});
+
+clearForm();
+route();
+</script>
+</body>
+</html>
