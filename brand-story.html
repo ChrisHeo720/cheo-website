@@ -121,6 +121,17 @@
   .reveal{opacity:0;transform:translateY(34px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1);}
   .reveal.on{opacity:1;transform:none;}
 
+  /* coming soon modal */
+  #csModal{position:fixed;inset:0;z-index:9500;display:none;align-items:center;justify-content:center;background:rgba(62,76,88,.45);backdrop-filter:blur(4px);padding:24px;}
+  #csModal.show{display:flex;}
+  .cs-card{background:var(--white);border-radius:10px;max-width:400px;width:100%;padding:44px 36px 34px;text-align:center;box-shadow:0 24px 70px rgba(62,76,88,.25);animation:csUp .35s cubic-bezier(.2,.7,.2,1);}
+  @keyframes csUp{from{transform:translateY(22px);opacity:0}to{transform:none;opacity:1}}
+  .cs-card .cs-en{font-family:var(--en);font-size:.72rem;letter-spacing:.45em;color:var(--icy);text-transform:uppercase;}
+  .cs-card h4{font-weight:500;font-size:1.25rem;margin:14px 0 10px;color:var(--ink);}
+  .cs-card p{font-weight:300;font-size:.9rem;line-height:1.9;color:var(--ink);opacity:.8;}
+  .cs-card button{margin-top:26px;border:none;background:var(--ink);color:#fff;border-radius:99px;padding:12px 34px;font-size:.85rem;font-family:var(--kr);cursor:pointer;transition:background .2s;}
+  .cs-card button:hover{background:var(--icy);}
+
   /* ===== admin ===== */
   #editToggle{position:fixed;right:22px;bottom:22px;z-index:10000;width:48px;height:48px;border-radius:50%;border:none;background:var(--ink);color:#fff;font-size:1.05rem;box-shadow:0 8px 24px rgba(62,76,88,.3);cursor:pointer;}
   body.editing #editToggle{background:var(--icy);}
@@ -306,6 +317,16 @@
   </div>
 </section>
 
+<!-- COMING SOON MODAL -->
+<div id="csModal">
+  <div class="cs-card">
+    <div class="cs-en">Coming Soon</div>
+    <h4 data-edit="cs_t">현재 준비 중입니다</h4>
+    <p data-edit="cs_p">조금만 기다려주세요!<br>첫 소식이 준비되면 이곳에서 가장 먼저 열립니다.</p>
+    <button id="csClose">닫기</button>
+  </div>
+</div>
+
 <footer>
   <div class="fw">
     <span class="mark">che<span class="o">o</span></span>
@@ -354,6 +375,12 @@ $('#btnSave').addEventListener('click',save);
 $('#btnImgs').addEventListener('click',()=>body.classList.toggle('imgs-open'));
 $('#btnReset').addEventListener('click',()=>{if(confirm('기본값으로 되돌릴까요?')){localStorage.removeItem(STORE);location.reload();}});
 window.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='e'){e.preventDefault();body.classList.contains('editing')?exitEdit():enterEdit();}});
+const csModal=$('#csModal');
+document.querySelectorAll('#letter .pill').forEach(b=>b.addEventListener('click',e=>{
+  e.preventDefault();csModal.classList.add('show');
+}));
+$('#csClose').addEventListener('click',()=>csModal.classList.remove('show'));
+csModal.addEventListener('click',e=>{if(e.target===csModal)csModal.classList.remove('show');});
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.12});
 $$('.reveal').forEach(el=>io.observe(el));
 </script>
